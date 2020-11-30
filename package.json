@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/QFults/04-Express#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^7.3.3",
     "mysql2": "^2.2.5"
   }
 }
