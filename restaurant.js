@@ -63,12 +63,43 @@ const deleteItem = () => {
   })
 }
 
+const updateItem = () => {
+  db.query('SELECT * FROM menu', (err, menu) => {
+    if (err) { console.log(err) }
+
+    inquirer.prompt([
+      {
+        type: 'list',
+        name: 'id',
+        message: 'Select the menu item you want to update the price:',
+        choices: menu.map(item => ({
+          name: `${item.name} (${item.price})`,
+          value: item.id
+        }))
+      },
+      {
+        type: 'number',
+        name: 'price',
+        message: 'Enter the new value for the item price:'
+      }
+    ])
+      .then(({ id, price }) => {
+        db.query('UPDATE menu SET ? WHERE ?', [{ price }, { id }], err => {
+          if (err) { console.log(err) }
+          console.log('Menu Item Price Updated!')
+          mainMenu()
+        })
+      })
+      .catch(err => console.log(err))
+  })
+}
+
 const mainMenu = () => {
   inquirer.prompt({
     type: 'list',
     name: 'action',
     message: 'What would you like to do?',
-    choices: ['View Menu', 'Add Menu Item', 'Update Menu Item Price', 'Delete Menu Item']
+    choices: ['View Menu', 'Add Menu Item', 'Update Menu Item Price', 'Delete Menu Item', 'EXIT']
   })
     .then(({ action }) => {
       switch (action) {
@@ -79,9 +110,13 @@ const mainMenu = () => {
           addItem()
           break
         case 'Update Menu Item Price':
+          updateItem()
           break
         case 'Delete Menu Item':
           deleteItem()
+          break
+        case 'EXIT':
+          process.exit()
           break
       }
     })
