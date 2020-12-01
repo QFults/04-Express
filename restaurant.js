@@ -39,12 +39,36 @@ const addItem = () => {
     })
 }
 
+const deleteItem = () => {
+  db.query('SELECT * FROM menu', (err, menu) => {
+    if (err) { console.log(err) }
+
+    inquirer.prompt({
+      type: 'list',
+      name: 'id',
+      message: 'Select the menu item you want to delete:',
+      choices: menu.map(item => ({
+        name: item.name,
+        value: item.id
+      }))
+    })
+      .then(({ id }) => {
+        db.query('DELETE FROM menu WHERE ?', { id }, err => {
+          if (err) { console.log(err) }
+          console.log('Menu Item Deleted!')
+          mainMenu()
+        })
+      })
+      .catch(err => console.log(err))
+  })
+}
+
 const mainMenu = () => {
   inquirer.prompt({
     type: 'list',
     name: 'action',
     message: 'What would you like to do?',
-    choices: ['View Menu', 'Add Menu Item']
+    choices: ['View Menu', 'Add Menu Item', 'Update Menu Item Price', 'Delete Menu Item']
   })
     .then(({ action }) => {
       switch (action) {
@@ -53,6 +77,11 @@ const mainMenu = () => {
           break
         case 'Add Menu Item':
           addItem()
+          break
+        case 'Update Menu Item Price':
+          break
+        case 'Delete Menu Item':
+          deleteItem()
           break
       }
     })
